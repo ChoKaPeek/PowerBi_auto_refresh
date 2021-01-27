@@ -1,4 +1,4 @@
-# PowerBi-Refresh
+# PowerBi Auto Refresh
 It is not currently possible to periodically refresh PowerBi Desktop data when not imported from a database - in which case you could use the DirectQuery capabilities of PowerBi.
 
 When working with a simple Excel file, I did not find any way to automate the refresh, and ended up using PyWinAuto instead. This is not a pretty solution, but it works reliably and does not require much client input - simply double-click the launcher instead of the .pbix file.
