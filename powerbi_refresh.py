@@ -22,6 +22,7 @@ def main():
   logging.basicConfig(format=FORMAT, filename="log.log", level=logging.INFO, datefmt="%d-%m-%Y %H:%M:%S")
   parser = argparse.ArgumentParser()
   parser.add_argument("workbook", help = "Path to .pbix file")
+  parser.add_argument("excel", help = "Path to .xlsm file")
   args = parser.parse_args()
 
   timings.after_clickinput_wait = 1
@@ -56,18 +57,23 @@ def main():
   win.wait("enabled", timeout=30)
 
   # Refresh
+  last_modified = os.path.getmtime(args.excel)
   try:
     while True:
+      time.sleep(2)
+      tmp = os.path.getmtime(args.excel)
+      if tmp == last_modified:
+        continue
+      last_modified = tmp
       logging.info("Refreshing")
-      win.set_focus()  # Make window visible
-      win.Accueil.click_input()  # Double-check Home toolbar selected
-      win.Actualiser.click_input()  # Refresh data
       try:
+        win.set_focus()  # Make window visible
+        win.Accueil.click_input()  # Double-check Home toolbar selected
+        win.Actualiser.click_input()  # Refresh data
         win.Actualiser.Fermer.click_input()  # If errors in data, a popup window needs to be closed
-      except:
-        pass
-      win.Save.click()  # Save the window
-      time.sleep(REFRESH_INTERVAL)
+        win.Save.click()  # Save the window
+      except Exception as e:
+        logging.error(e)
   except KeyboardInterrupt:
     pass
     
@@ -76,12 +82,7 @@ def main():
   logging.info("Exiting")
   win.close()
 
-  # Force close
-  #for proc in psutil.process_iter():
-  #  if proc.name() == PROCNAME:
-  #    proc.kill()
 
-    
 if __name__ == '__main__':
   try:
     main()
